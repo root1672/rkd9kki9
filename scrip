@@ -1,1 +1,1768 @@
-sss
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "🎃 The Skinwalker HUB 🎃",
+    LoadingTitle = "🎃 The Skinwalker HUB 🎃",
+    LoadingSubtitle = "Made by: @ArquiveHacks",
+    ConfigurationSaving = {
+        Enabled = false,
+        FolderName = nil,
+        FileName = "Big Hub"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+    KeySystem = false,
+    KeySettings = {
+        Title = "Untitled",
+        Subtitle = "Key System",
+        Note = "No method of obtaining the key is provided",
+        FileName = "Key",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+    }
+})
+
+local TabAbout = Window:CreateTab("📖 About")
+TabAbout:CreateParagraph({
+    Title = "🎃 The Skinwalker HUB 🎃",
+    Content = "Made by: @ArquiveHacks"
+})
+TabAbout:CreateParagraph({
+    Title = "Status: Working 🟩",
+    Content = "No updates required."
+})
+TabAbout:CreateParagraph({
+    Title = "Version: 3.5",
+    Content = [[
+Last Update Logs:
+- Anti-Kick Added
+- Improved Bypass
+- Bugs Fixed
+- Improved Speed
+- Improved & New GUI
+- Halloween Update
+    ]]
+})
+TabAbout:CreateLabel("Enjoy!")
+
+local Tab = Window:CreateTab("🚶 Moviment")
+local Section = Tab:CreateSection("Moviment")
+
+local ButtonRemoveJumpDelay = Tab:CreateButton({
+    Name = "Remove Jump Delay",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Jump Delay Removed!",
+            Content = "Now you can jump as many times as you want.",
+            Duration = 6.5,
+            Image = nil
+        })
+        
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        local userInputService = game:GetService("UserInputService")
+        
+        local canJump = true
+        
+        local function onJumpRequest()
+            if canJump then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                canJump = false
+            end
+        end
+        
+        userInputService.JumpRequest:Connect(onJumpRequest)
+        
+        humanoid.StateChanged:Connect(function(_, newState)
+            if newState == Enum.HumanoidStateType.Seated or newState == Enum.HumanoidStateType.Physics then
+                canJump = true
+            end
+        end)
+        
+        character.HumanoidRootPart.Touched:Connect(function(hit)
+            if hit:IsA("BasePart") and hit.Position.Y < character.HumanoidRootPart.Position.Y then
+                canJump = true
+            end
+        end)
+    end,
+})
+
+local ButtonFly = Tab:CreateButton({
+    Name = "Fly",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Fly Activated!",
+            Content = "Now you can fly around the map.",
+            Duration = 6.5,
+            Image = nil
+        })
+        loadstring(game:HttpGet('https://pastebin.com/raw/YSL3xKYU'))()
+    end, 
+})
+
+local player = game.Players.LocalPlayer
+local isActive = false
+local keybindFlag = "Keybind1"
+local connection
+
+local Keybind = Tab:CreateKeybind({
+    Name = "Speed",
+    CurrentKeybind = "V",
+    HoldToInteract = false,
+    Flag = keybindFlag,
+    Callback = function()
+        isActive = not isActive
+
+        if isActive then
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                local targetPath = workspace:FindFirstChild("Alive")
+                if targetPath then
+                    targetPath = targetPath:FindFirstChild(player.Name)
+                end
+                if targetPath then
+                    targetPath = targetPath:FindFirstChild("SelfStuns")
+                end
+                if targetPath then
+                    targetPath = targetPath:FindFirstChild("Sprint")
+                end
+                if targetPath then
+                    targetPath = targetPath:FindFirstChild("WalkSpeed")
+                end
+
+                if targetPath and isActive then
+                    targetPath.Value = 50
+                end
+
+                wait(0.0001)
+            end)
+        else
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+        end
+    end,
+})
+
+local player = game.Players.LocalPlayer
+local userInputService = game:GetService("UserInputService")
+local runService = game:GetService("RunService")
+
+local noClipEnabled = false
+local keybindFlag = "KeybindN"
+local connection
+
+local function setNoClip(enabled)
+    for _, part in pairs(player.Character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = not enabled
+            if not enabled then
+                part.Velocity = Vector3.new(0, 0, 0)
+            end
+        end
+    end
+end
+
+local Keybind = Tab:CreateKeybind({
+    Name = "NoClip",
+    CurrentKeybind = "N",
+    HoldToInteract = false,
+    Flag = keybindFlag,
+    Callback = function()
+        noClipEnabled = not noClipEnabled
+        setNoClip(noClipEnabled)
+    end,
+})
+
+runService.RenderStepped:Connect(function()
+    if noClipEnabled then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Velocity = player.Character.Humanoid.MoveDirection * 25
+            end
+        end
+    end
+end)
+
+setNoClip(false)
+
+print("\
+🎃 The Skinwalker HUB 🎃 (Made by @ArquiveHacks)\
+Other Scripts: Players ESP, Made By: Xbqc Software (https://discord.gg/GnzUUPd3FQ)\
+Fly GUI, Made by: me_ozone and Quandale\
+Credits: @nikfastman29 (Helped with the code and the AC Bypass)\
+And everything else made by @ArquiveHacks\
+Enjoy the Script!")
+
+local player = game.Players.LocalPlayer
+
+local success = true
+
+local acPlayerScripts = player.PlayerScripts:FindFirstChild("AC")
+if acPlayerScripts then
+    acPlayerScripts:Destroy()
+else
+    success = false
+end
+
+local bug = game.ReplicatedStorage:FindFirstChild("Anticheat")
+if bug then
+    bug:Destroy()
+else
+    success = false
+end
+
+local acStarterPlayerScripts = game.StarterPlayer.StarterPlayerScripts:FindFirstChild("AC")
+if acStarterPlayerScripts then
+    acStarterPlayerScripts:Destroy()
+else
+    success = false
+end
+
+if success then
+    Rayfield:Notify({
+            Title = "Success!",
+            Content = "The AC Bypass has been loaded successfully.",
+            Duration = 8,
+            Image = nil
+        })
+else
+    Rayfield:Notify({
+            Title = "Warning!",
+            Content = "The bypass has not been loaded, or has already been loaded previously.",
+            Duration = 8,
+            Image = nil
+        })
+end
+
+local Tab = Window:CreateTab("🔎 Visuals")
+local Section = Tab:CreateSection("ESP")
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local HighlightConfig = {
+    ObjectNames = { "Sheet", "Circle", "Pipe" }
+}
+
+local distanceLabels = {}
+local espEnabled = false
+
+local function createDistanceLabel(object)
+    local distanceLabel = Instance.new("BillboardGui")
+    distanceLabel.Adornee = object
+    distanceLabel.Size = UDim2.new(0, 80, 0, 30)
+    distanceLabel.StudsOffset = Vector3.new(0, 2, 0)
+    distanceLabel.AlwaysOnTop = true
+    distanceLabel.Parent = object
+
+    local scrapTextLabel = Instance.new("TextLabel")
+    scrapTextLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    scrapTextLabel.BackgroundTransparency = 1
+    scrapTextLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    scrapTextLabel.TextScaled = true
+    scrapTextLabel.Font = Enum.Font.GothamBold
+    scrapTextLabel.TextStrokeTransparency = 0.5
+    scrapTextLabel.TextSize = 0.8
+    scrapTextLabel.Text = "Scrap"
+    scrapTextLabel.Position = UDim2.new(0, 0, 0, 5)
+    scrapTextLabel.Parent = distanceLabel
+
+    local distanceTextLabel = Instance.new("TextLabel")
+    distanceTextLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    distanceTextLabel.BackgroundTransparency = 1
+    distanceTextLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    distanceTextLabel.TextScaled = true
+    distanceTextLabel.Font = Enum.Font.GothamBold
+    distanceTextLabel.TextStrokeTransparency = 0.5
+    distanceTextLabel.TextSize = 0.8
+    distanceTextLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    distanceTextLabel.Parent = distanceLabel
+
+    distanceLabels[object] = distanceTextLabel
+end
+
+local function updateDistanceLabel(label, object, player)
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local distance = (object.Position - character.HumanoidRootPart.Position).Magnitude
+        label.Text = string.format("%d m away", math.floor(distance))
+    end
+end
+
+local function highlightAndLabelObjects()
+    local player = Players.LocalPlayer
+
+    for _, object in ipairs(Workspace.Scrap:GetChildren()) do
+        for _, name in ipairs(HighlightConfig.ObjectNames) do
+            if object.Name == name and not distanceLabels[object] then
+                createDistanceLabel(object)
+
+                RunService.RenderStepped:Connect(function()
+                    if espEnabled then
+                        updateDistanceLabel(distanceLabels[object], object, player)
+                    end
+                end)
+                break
+            end
+        end
+    end
+end
+
+local function clearDistanceLabelOnObjectRemoving(object)
+    if object then
+        local label = distanceLabels[object]
+        if label then
+            label.Parent:Destroy()
+            distanceLabels[object] = nil
+        end
+    end
+end
+
+local function monitorScrapObjects()
+    local scrapFolder = Workspace:WaitForChild("Scrap")
+
+    scrapFolder.ChildAdded:Connect(function(newObject)
+        if espEnabled then
+            highlightAndLabelObjects()
+        end
+    end)
+
+    scrapFolder.ChildRemoved:Connect(clearDistanceLabelOnObjectRemoving)
+end
+
+local function toggleESP(value)
+    espEnabled = value
+    if not espEnabled then
+        for object, label in pairs(distanceLabels) do
+            label.Parent:Destroy()
+        end
+        distanceLabels = {}
+    else
+        highlightAndLabelObjects()
+    end
+end
+
+local function initialize()
+    local scrapFolder = Workspace:FindFirstChild("Scrap")
+    if not scrapFolder then
+        return
+    end
+    monitorScrapObjects()
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Scrap ESP",
+    CurrentValue = false,
+    Flag = "ESP1",
+    Callback = function(Value)
+        toggleESP(Value)
+    end,
+})
+
+initialize()
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local HighlightConfig = {
+    ObjectNames = { "Candy" }
+}
+
+local distanceLabels = {}
+local espEnabled = false
+
+local function createDistanceLabel(object)
+    local distanceLabel = Instance.new("BillboardGui")
+    distanceLabel.Adornee = object
+    distanceLabel.Size = UDim2.new(0, 80, 0, 30)
+    distanceLabel.StudsOffset = Vector3.new(0, 2, 0)
+    distanceLabel.AlwaysOnTop = true
+    distanceLabel.Parent = object
+
+    local candyTextLabel = Instance.new("TextLabel")
+    candyTextLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    candyTextLabel.BackgroundTransparency = 1
+    candyTextLabel.TextColor3 = Color3.fromRGB(255, 20, 147)
+    candyTextLabel.TextScaled = true
+    candyTextLabel.Font = Enum.Font.GothamBold
+    candyTextLabel.TextStrokeTransparency = 0.5
+    candyTextLabel.TextSize = 0.8
+    candyTextLabel.Text = "Candy"
+    candyTextLabel.Position = UDim2.new(0, 0, 0, 5)
+    candyTextLabel.Parent = distanceLabel
+
+    local distanceTextLabel = Instance.new("TextLabel")
+    distanceTextLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    distanceTextLabel.BackgroundTransparency = 1
+    distanceTextLabel.TextColor3 = Color3.fromRGB(255, 20, 147)
+    distanceTextLabel.TextScaled = true
+    distanceTextLabel.Font = Enum.Font.GothamBold
+    distanceTextLabel.TextStrokeTransparency = 0.5
+    distanceTextLabel.TextSize = 0.8
+    distanceTextLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    distanceTextLabel.Parent = distanceLabel
+
+    distanceLabels[object] = distanceTextLabel
+end
+
+local function updateDistanceLabel(label, object, player)
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local distance = (object.Position - character.HumanoidRootPart.Position).Magnitude
+        label.Text = string.format("%d m away", math.floor(distance))
+    end
+end
+
+local function highlightAndLabelObjects()
+    local player = Players.LocalPlayer
+
+    for _, object in ipairs(Workspace.Scrap:GetChildren()) do
+        for _, name in ipairs(HighlightConfig.ObjectNames) do
+            if object.Name == name and not distanceLabels[object] then
+                createDistanceLabel(object)
+
+                RunService.RenderStepped:Connect(function()
+                    if espEnabled then
+                        updateDistanceLabel(distanceLabels[object], object, player)
+                    end
+                end)
+                break
+            end
+        end
+    end
+end
+
+local function clearDistanceLabelOnObjectRemoving(object)
+    if object then
+        local label = distanceLabels[object]
+        if label then
+            label.Parent:Destroy()
+            distanceLabels[object] = nil
+        end
+    end
+end
+
+local function monitorScrapObjects()
+    local scrapFolder = Workspace:WaitForChild("Scrap")
+
+    scrapFolder.ChildAdded:Connect(function(newObject)
+        if espEnabled then
+            highlightAndLabelObjects()
+        end
+    end)
+
+    scrapFolder.ChildRemoved:Connect(clearDistanceLabelOnObjectRemoving)
+end
+
+local function toggleESP(value)
+    espEnabled = value
+    if not espEnabled then
+        for object, label in pairs(distanceLabels) do
+            label.Parent:Destroy()
+        end
+        distanceLabels = {}
+    else
+        highlightAndLabelObjects()
+    end
+end
+
+local function initialize()
+    local scrapFolder = Workspace:FindFirstChild("Scrap")
+    if not scrapFolder then
+        return
+    end
+    monitorScrapObjects()
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Candy ESP",
+    CurrentValue = false,
+    Flag = "ESP1",
+    Callback = function(Value)
+        toggleESP(Value)
+    end,
+})
+
+initialize()
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+local locations = {
+    {name = "Safe-House", position = Vector3.new(286.32, 33.79, 428.09)},
+    {name = "Military Tower", position = Vector3.new(134.24, 89.39, -781.11)},
+    {name = "Container", position = Vector3.new(178.57, 57.66, -420.93)},
+    {name = "Generator", position = Vector3.new(-611.35, 33.28, -273.70)},
+    {name = "House #1", position = Vector3.new(-670.99, 50.70, 387.82)},
+    {name = "Cabin", position = Vector3.new(-217.06, 40.34, 301.14)},
+    {name = "Shop", position = Vector3.new(-508.93, 37.91, -709.50)},
+}
+
+local espEnabled = false
+local espParts = {}
+
+local function createESP(location)
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(1, 1, 1)
+    part.Position = location.position
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 1
+    part.Parent = Workspace
+
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Size = UDim2.new(0, 100, 0, 25)
+    billboardGui.Adornee = part
+    billboardGui.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Text = location.name
+    textLabel.Size = UDim2.new(1, 0, 0.45, 0)
+    textLabel.Position = UDim2.new(0, 0, 0, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextStrokeTransparency = 0.2
+    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    textLabel.Parent = billboardGui
+
+    local distanceLabel = Instance.new("TextLabel")
+    distanceLabel.Size = UDim2.new(1, 0, 0.45, 0)
+    distanceLabel.Position = UDim2.new(0, 0, 0.45, 0)
+    distanceLabel.BackgroundTransparency = 1
+    distanceLabel.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    distanceLabel.TextScaled = true
+    distanceLabel.Font = Enum.Font.GothamBold
+    distanceLabel.TextSize = 10
+    distanceLabel.TextStrokeTransparency = 0.2
+    distanceLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    distanceLabel.Parent = billboardGui
+
+    local function updateDistance()
+        local distance = (location.position - player.Character.HumanoidRootPart.Position).magnitude
+        distanceLabel.Text = math.floor(distance) .. " m away"
+    end
+
+    RunService.RenderStepped:Connect(updateDistance)
+
+    billboardGui.Parent = part
+    espParts[part] = true
+end
+
+local function toggleESP(value)
+    espEnabled = value
+    if espEnabled then
+        for _, location in ipairs(locations) do
+            createESP(location)
+        end
+    else
+        for part in pairs(espParts) do
+            part:Destroy()
+        end
+        espParts = {}
+    end
+end
+
+local function initialize()
+    espEnabled = false
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Places ESP",
+    CurrentValue = false,
+    Flag = "ESP1",
+    Callback = function(Value)
+        toggleESP(Value)
+    end,
+})
+
+initialize()
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+local targetName = "Skinny"
+
+local billboardGui, nameLabelRed, nameLabelWhite
+local espEnabled = false
+
+local function getDistance(character)
+    return math.floor((character.HumanoidRootPart.Position - camera.CFrame.Position).magnitude)
+end
+
+local function createESP(target)
+    if not target or not target:FindFirstChild("HumanoidRootPart") then return end
+
+    billboardGui = Instance.new("BillboardGui")
+    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+    billboardGui.Adornee = target.HumanoidRootPart
+    billboardGui.AlwaysOnTop = true
+    billboardGui.Parent = target.HumanoidRootPart
+
+    nameLabelRed = Instance.new("TextLabel")
+    nameLabelRed.Size = UDim2.new(1, 0, 0.3, 0)
+    nameLabelRed.Position = UDim2.new(0, 0, 0.4, 0)
+    nameLabelRed.BackgroundTransparency = 1
+    nameLabelRed.TextColor3 = Color3.fromRGB(255, 0, 0)
+    nameLabelRed.TextSize = 10
+    nameLabelRed.Font = Enum.Font.GothamBold
+    nameLabelRed.TextStrokeTransparency = 0.3
+    nameLabelRed.TextStrokeColor3 = Color3.new(0, 0, 0)
+    nameLabelRed.Parent = billboardGui
+
+    nameLabelWhite = Instance.new("TextLabel")
+    nameLabelWhite.Size = UDim2.new(1, 0, 0.3, 0)
+    nameLabelWhite.Position = UDim2.new(0, 0, 0.55, 0)
+    nameLabelWhite.BackgroundTransparency = 1
+    nameLabelWhite.TextColor3 = Color3.fromRGB(255, 0, 0)
+    nameLabelWhite.TextSize = 10
+    nameLabelWhite.Font = Enum.Font.GothamBold
+    nameLabelWhite.TextStrokeTransparency = 0.5
+    nameLabelWhite.TextStrokeColor3 = Color3.new(0, 0, 0)
+    nameLabelWhite.Parent = billboardGui
+end
+
+local function updateESP(target)
+    if billboardGui and target and target.Parent then
+        local distance = getDistance(target)
+        nameLabelRed.Text = target.Name
+        nameLabelWhite.Text = string.format("%d m away", distance)
+    end
+end
+
+local function monitorTarget()
+    while espEnabled do
+        local target = Workspace.Alive:FindFirstChild(targetName)
+        if target then
+            if not billboardGui then
+                createESP(target)
+            end
+            updateESP(target)
+        else
+            if billboardGui then
+                billboardGui:Destroy()
+                billboardGui = nil
+                nameLabelRed = nil
+                nameLabelWhite = nil
+            end
+        end
+        task.wait(0.001)
+    end
+end
+
+local function toggleESP(value)
+    espEnabled = value
+    if espEnabled then
+        monitorTarget()
+    else
+        if billboardGui then
+            billboardGui:Destroy()
+            billboardGui = nil
+            nameLabelRed = nil
+            nameLabelWhite = nil
+        end
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Skinny ESP",
+    CurrentValue = false,
+    Flag = "ESP1",
+    Callback = function(Value)
+        toggleESP(Value)
+    end,
+})
+
+toggleESP(false)
+
+local Button = Tab:CreateButton({
+   Name = "Players ESP",
+   Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/lucas021ajds/fly/refs/heads/main/fly"))()
+   end,
+})
+
+local Section = Tab:CreateSection("FullBright")
+
+local Button = Tab:CreateButton({
+   Name = "FullBright",
+   Callback = function()
+            Rayfield:Notify({
+            Title = "FullBright Activated!",
+            Content = "Now you can see better at night..",
+            Duration = 6.5,
+            Image = nil
+        })
+            local function setFullBright()
+    local lighting = game:GetService("Lighting")
+    lighting.Brightness = 2
+    lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+    lighting.Ambient = Color3.new(1, 1, 1)
+    lighting.TimeOfDay = "12:00"
+end
+
+setFullBright()
+   end,
+})
+
+local Tab = Window:CreateTab("🌀 Teleport 🌀")
+
+local Section = Tab:CreateSection("Places")
+
+Tab:CreateButton({
+    Name = "Shop",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Shop.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local x = -508.1000671386719
+        local y = 19.64132208959961
+        local z = -705.8631591796875
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
+
+teleportPlayer()
+end,
+})
+
+Tab:CreateButton({
+    Name = "Safe-House",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Safe House.",
+            Duration = 6.5,
+            Image = nil
+        })
+            local player = game.Players.LocalPlayer
+
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local x = 302.7801513671875
+        local y = 22.24676513671875
+        local z = 428.24334716796875
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
+
+teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Military Tower",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Military Tower.",
+            Duration = 6.5,
+            Image = nil
+        })
+            local player = game.Players.LocalPlayer
+
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local x = 133.2364501953125
+        local y = 73.00946044921875
+        local z = -783.7269897460938
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
+
+teleportPlayer()
+            end,
+})
+
+Tab:CreateButton({
+    Name = "Container",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Container.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Armory.Spawn
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Generator",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Generator.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.MapEnvironment.Interactable.Generator
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "House #1",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the House #1.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Map.Map_Buildings["DOM MAIN"]["mniej wazne"].default
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Cabin",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Cabin.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local targetPosition = Vector3.new(-226.12, 23.54, 314.77)
+                player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+local Section = Tab:CreateSection("Alive")
+
+Tab:CreateButton({
+    Name = "Skinny",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local target = game.Workspace.Alive:FindFirstChild("Skinny")
+
+        if target and target:FindFirstChild("Head") then
+            local targetHead = target.Head
+
+            local function teleportPlayer()
+                if character:FindFirstChild("HumanoidRootPart") then
+                    local humanoidRootPart = character.HumanoidRootPart
+                    local originalPosition = humanoidRootPart.Position
+
+                    humanoidRootPart.CFrame = targetHead.CFrame
+                    wait(0.1)
+
+                    if (humanoidRootPart.Position - originalPosition).magnitude < 0.1 then
+                        Rayfield:Notify({
+                            Title = "Teleportation Failed",
+                            Content = "Skinny has not left the cave yet.",
+                            Duration = 6.5,
+                            Image = nil
+                        })
+                    else
+                        Rayfield:Notify({
+                            Title = "Successfully teleported!",
+                            Content = "You have successfully teleported to the Skinny",
+                            Duration = 6.5,
+                            Image = nil
+                        })
+                    end
+                end
+            end
+
+            teleportPlayer()
+        else
+            Rayfield:Notify({
+                Title = "Teleportation Failed",
+                Content = "Skinny has not left the cave yet.",
+                Duration = 6.5,
+                Image = nil
+            })
+        end
+    end,
+})
+
+local Section = Tab:CreateSection("Caves")
+
+Tab:CreateButton({
+    Name = "Cave 1",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Cave 1.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Map.Caves.Cave1.CaveTo
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Cave 2",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Cave 2.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Map.Caves.Cave2.CaveTo
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Cave 3",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Cave 3.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Map.Caves.Cave3.CaveTo
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+local Section = Tab:CreateSection("Supply Drop")
+
+Tab:CreateButton({
+    Name = "Supply Drop",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local carePackage = game.Workspace:FindFirstChild("CarePackage")
+
+        if carePackage then
+            local mainPart = carePackage:FindFirstChild("Main")
+            if mainPart then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.CFrame = mainPart.CFrame
+                    Rayfield:Notify({
+                        Title = "Successfully Teleported!",
+                        Content = "You have successfully teleported to Supply Drop.",
+                        Duration = 6.5,
+                        Image = nil
+                    })
+                end
+            end
+        else
+            Rayfield:Notify({
+                Title = "Teleport Failed!",
+                Content = "The Supply Drop has not yet dropped or is not available.",
+                Duration = 6.5,
+                Image = nil
+            })
+        end
+    end,
+})
+
+local Section = Tab:CreateSection("Armory Codes")
+
+Tab:CreateButton({
+    Name = "Paper 1",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 1.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes:GetChildren()[6].Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Paper 2",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 2.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes.Holder.Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Paper 3",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 3.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes:GetChildren()[3].Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Paper 4",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 4.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes:GetChildren()[2].Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Paper 5",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 5.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes:GetChildren()[4].Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Paper 6",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Paper 6.",
+            Duration = 6.5,
+            Image = nil
+        })
+        local player = game.Players.LocalPlayer
+        local target = game.Workspace.Armory.Codes:GetChildren()[5].Symbol
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+local Tab = Window:CreateTab("💀 Exploits")
+
+local Section = Tab:CreateSection("Trap")
+
+local Paragraph = Tab:CreateParagraph({Title = "Warning", Content = "The Trap Exploits are client-sided and only you can see them!"})
+
+local Button = Tab:CreateButton({
+   Name = "Delete Land Mines",
+   Callback = function()
+            local hazardsFolder = game.Workspace:FindFirstChild("Hazards")
+
+        if not hazardsFolder then
+            Rayfield:Notify({
+            Title = "Wrong game!",
+            Content = "Mines path not found. You might be in the wrong game.",
+            Duration = 6.5,
+            Image = nil
+        })
+            return
+        end
+
+        local function deleteMines(folderName)
+            local minesFolder = hazardsFolder:FindFirstChild(folderName)
+            if minesFolder then
+                for _, mine in ipairs(minesFolder:GetChildren()) do
+                    if mine:IsA("BasePart") or mine:IsA("Model") then
+                        mine:Destroy()
+                    end
+                end
+            end
+        end
+
+        deleteMines("Mines")
+        deleteMines("PlayerMines")
+
+        Rayfield:Notify({
+            Title = "Land Mines Deleted!",
+            Content = "All Land Mines in the game have been deleted.",
+            Duration = 6.5,
+            Image = nil
+        })
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "Delete Bear Traps",
+   Callback = function()
+            local hazardsFolder = game.Workspace:FindFirstChild("Hazards")
+
+        if not hazardsFolder then
+            Rayfield:Notify({
+                Title = "Wrong game!",
+                Content = "Bear Traps path not found. You might be in the wrong game.",
+                Duration = 5,
+                Image = nil
+            })
+            return
+        end
+
+        local trapNames = {
+            BearTraps = "bear trap",
+            PlayerBearTraps = "PlayerBearTrap"
+        }
+
+        for folderName, trapName in pairs(trapNames) do
+            local trapsFolder = hazardsFolder:FindFirstChild(folderName)
+            if trapsFolder then
+                for _, trap in ipairs(trapsFolder:GetChildren()) do
+                    if trap.Name == trapName then
+                        trap:Destroy()
+                    end
+                end
+            end
+        end
+
+        Rayfield:Notify({
+            Title = "Bear Traps Deleted!",
+            Content = "You have successfully deleted the Bear Traps.",
+            Duration = 5,
+            Image = nil       
+        })
+    end,
+})
+
+local Section = Tab:CreateSection("Shop")
+
+local Button = Tab:CreateButton({
+   Name = "Open Shop",
+   Callback = function()
+            Rayfield:Notify({
+	Title = "The Shop GUI has been opened.",
+	Content = "Now you can buy whatever you want at any time.",
+	Duration = 6,
+    Image = nil
+})
+                    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+
+local LocalPlayer = Players.LocalPlayer
+local ShopOpen = false
+local isTransitioning = false
+
+local function updatePrices(ShopGUI)
+    for _, v in ShopGUI:WaitForChild("ScrollingFrame"):GetChildren() do
+        if v:IsA("Frame") then
+            local Price = v:FindFirstChild("Price")
+            if Price and ReplicatedStorage.Prices:FindFirstChild(v.Name) then
+                Price.Text = ReplicatedStorage.Prices[v.Name].Value .. " CR"
+            end
+        end
+    end
+end
+
+local function closeShop(ShopGUIClone, ShopGUI)
+    if isTransitioning then return end
+    isTransitioning = true
+    
+    ShopGUI.Close:Play()
+    TweenService:Create(Lighting.ShopBlur, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 0}):Play()
+    
+    local closeTween = TweenService:Create(ShopGUI, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(1.5, 0, 0.5, 0)})
+    closeTween:Play()
+    closeTween.Completed:Wait()
+    
+    ShopGUIClone:Destroy()
+    ShopOpen = false
+    isTransitioning = false
+end
+
+local function openShop()
+    if ShopOpen then return end
+    ShopOpen = true
+
+    local ShopGUIClone = ReplicatedStorage:WaitForChild("ShopGUI"):Clone()
+    ShopGUIClone.Parent = LocalPlayer.PlayerGui
+    local ShopGUI = ShopGUIClone:WaitForChild("ShopGUI")
+
+    TweenService:Create(Lighting.ShopBlur, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = 15}):Play()
+    ShopGUI.Open:Play()
+    ShopGUI.Position = UDim2.new(1.5, 0, 0.5, 0)
+
+    TweenService:Create(ShopGUI, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+    
+    updatePrices(ShopGUI)
+
+    local CloseButton = ShopGUI:WaitForChild("CloseButton")
+    CloseButton.Activated:Connect(function()
+        if not isTransitioning then
+            closeShop(ShopGUIClone, ShopGUI)
+        end
+    end)
+end
+
+local function toggleShop()
+    if ShopOpen then
+        closeShop(LocalPlayer.PlayerGui:FindFirstChild("ShopGUI"), LocalPlayer.PlayerGui:FindFirstChild("ShopGUI"))
+    else
+        openShop()
+    end
+end
+
+toggleShop()
+   end,
+})
+
+local Section = Tab:CreateSection("Power & Stamina")
+
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local MAX_STAMINA = 800
+local staminaMaintained = false
+
+local function maintainStamina(character)
+    local stamina = character:WaitForChild("Stamina")
+
+    while staminaMaintained do
+        stamina.Value = MAX_STAMINA
+        wait(0.1)
+    end
+end
+
+local function onCharacterAdded(character)
+    character:WaitForChild("Stamina")
+    if staminaMaintained then
+        maintainStamina(character)
+    end
+end
+
+local function toggleStamina(value)
+    staminaMaintained = value
+    if staminaMaintained and player.Character then
+        maintainStamina(player.Character)
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Infinite Stamina",
+    CurrentValue = false,
+    Flag = "Stamina1",
+    Callback = function(Value)
+        toggleStamina(Value)
+    end,
+})
+
+Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+
+toggleStamina(false)
+
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local MAX_POWER = 800
+local powerMaintained = false
+
+local function maintainPower(character)
+    local power = character:WaitForChild("Power")
+
+    while powerMaintained do
+        power.Value = MAX_POWER
+        wait(0.1)
+    end
+end
+
+local function onCharacterAdded(character)
+    character:WaitForChild("Power")
+    if powerMaintained then
+        maintainPower(character)
+    end
+end
+
+local function togglePower(value)
+    powerMaintained = value
+    if powerMaintained and player.Character then
+        maintainPower(player.Character)
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "Infinite Power",
+    CurrentValue = false,
+    Flag = "Power1",
+    Callback = function(Value)
+        togglePower(Value)
+    end,
+})
+
+Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+
+togglePower(false)
+
+local Section = Tab:CreateSection("Weight")
+
+initialize()
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local espEnabled = false
+local weightLoopRunning = false
+
+local function setWeight(value)
+    local localPlayer = Workspace.Alive:FindFirstChild(player.Name)
+    if localPlayer and localPlayer:FindFirstChild("Weight") then
+        localPlayer.Weight.Value = value
+    end
+end
+
+local function weightLoop()
+    while espEnabled do
+        setWeight(0)
+        task.wait(0.0001)
+    end
+    weightLoopRunning = false
+end
+
+local function toggleWeight(value)
+    espEnabled = value
+    if espEnabled and not weightLoopRunning then
+        weightLoopRunning = true
+        weightLoop()
+    elseif not espEnabled then
+        setWeight(Workspace.Alive:FindFirstChild(player.Name).Weight.Value)
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "No Weight",
+    CurrentValue = false,
+    Flag = "WeightToggle",
+    Callback = function(Value)
+        toggleWeight(Value)
+    end,
+})
+
+toggleWeight(false)
+            
+local Section = Tab:CreateSection("Scrap")
+
+local Button = Tab:CreateButton({
+    Name = "Bring Scraps",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        local function bringItemToPlayer(item)
+            if item then
+                local playerPosition = character.PrimaryPart.Position
+                local newPosition = playerPosition - Vector3.new(0, 3, 0)
+                item.Position = newPosition
+            end
+        end
+
+        local children = workspace.Scrap:GetChildren()
+
+        for i = 1, math.min(200, #children) do
+            local scrapItem = children[i]
+            
+            if scrapItem.Name ~= "SpawnPoints" and scrapItem.Name ~= "UsedSpawns" and scrapItem.Name ~= "Candy" then
+                bringItemToPlayer(scrapItem)
+            end
+        end
+    end,
+})
+
+local Workspace = game:GetService("Workspace")
+local scrapFolder = Workspace:WaitForChild("Scrap")
+local holdDurationMaintained = false
+
+local function maintainHoldDuration()
+    while holdDurationMaintained do
+        local startIndex = 1
+        local endIndex = math.min(500, #scrapFolder:GetChildren())
+        local items = scrapFolder:GetChildren()
+
+        for index = startIndex, endIndex do
+            local item = items[index]
+
+            if item and item.Name ~= "Candy" then
+                local prompt = item:FindFirstChild("Grab")
+                
+                if prompt and prompt:IsA("ProximityPrompt") then
+                    prompt.HoldDuration = 0
+                end
+            end
+        end
+
+        wait(0.5)
+    end
+end
+
+local function resetHoldDuration()
+    local items = scrapFolder:GetChildren()
+    
+    for _, item in ipairs(items) do
+        local prompt = item:FindFirstChild("Grab")
+        
+        if prompt and prompt:IsA("ProximityPrompt") then
+            prompt.HoldDuration = 0.5
+        end
+    end
+end
+
+local function toggleHoldDuration(value)
+    holdDurationMaintained = value
+    if holdDurationMaintained then
+        maintainHoldDuration()
+    else
+        resetHoldDuration()
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "No Scraps Delay",
+    CurrentValue = false,
+    Flag = "HoldDuration1",
+    Callback = function(Value)
+        toggleHoldDuration(Value)
+    end,
+})
+
+toggleHoldDuration(false)
+
+local Section = Tab:CreateSection("Halloween")
+
+local Button = Tab:CreateButton({
+    Name = "Bring Candys",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Candys brought!",
+            Content = "All the Candys have been brought successfully.",
+            Duration = 7,
+            Image = nil
+        })
+
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        local function bringItemToPlayer(item)
+            if item then
+                local playerPosition = character.PrimaryPart.Position
+                local newPosition = playerPosition - Vector3.new(0, 3, 0)
+                item.Position = newPosition
+            end
+        end
+
+        local children = workspace.Scrap:GetChildren()
+
+        for _, scrapItem in ipairs(children) do
+            if scrapItem.Name == "Candy" then
+                bringItemToPlayer(scrapItem)
+            elseif scrapItem.Name ~= "Sheet" and scrapItem.Name ~= "Circle" and scrapItem.Name ~= "Pipe" and scrapItem.Name ~= "UsedSpawns" and scrapItem.Name ~= "SpawnPoints" then
+            end
+        end
+    end,
+})
+
+local Workspace = game:GetService("Workspace")
+local scrapFolder = Workspace:WaitForChild("Scrap")
+local holdDurationMaintained = false
+
+local function maintainHoldDuration()
+    while holdDurationMaintained do
+        local startIndex = 1
+        local endIndex = math.min(500, #scrapFolder:GetChildren())
+        local items = scrapFolder:GetChildren()
+
+        for index = startIndex, endIndex do
+            local item = items[index]
+
+            if item and (item.Name == "Candy") then
+                local prompt = item:FindFirstChild("Grab")
+                
+                if prompt and prompt:IsA("ProximityPrompt") then
+                    prompt.HoldDuration = 0
+                end
+            end
+        end
+
+        wait(0.5)
+    end
+end
+
+local function resetHoldDuration()
+    local items = scrapFolder:GetChildren()
+    
+    for _, item in ipairs(items) do
+        local prompt = item:FindFirstChild("Grab")
+        
+        if prompt and prompt:IsA("ProximityPrompt") then
+            prompt.HoldDuration = 0.5
+        end
+    end
+end
+
+local function toggleHoldDuration(value)
+    holdDurationMaintained = value
+    if holdDurationMaintained then
+        maintainHoldDuration()
+    else
+        resetHoldDuration()
+    end
+end
+
+local Toggle = Tab:CreateToggle({
+    Name = "No Candys Delay",
+    CurrentValue = false,
+    Flag = "HoldDuration1",
+    Callback = function(Value)
+        toggleHoldDuration(Value)
+    end,
+})
+
+local Tab = Window:CreateTab("💸 Gamepasses")
+
+local Section = Tab:CreateSection("Gamepasses")
+
+local Button = Tab:CreateButton({
+   Name = "SixthSense Gamepass",
+   Callback = function()
+            if not game.Players.LocalPlayer then
+            return
+        end
+
+        local gamepassesFolder = game.Players.LocalPlayer:FindFirstChild("Gamepasses")
+        
+        if not gamepassesFolder then
+            Rayfield:Notify({
+                Title = "Wrong Game!",
+                Content = "SixthSense Gamepass folder not found, You might be in the wrong game.",
+                Duration = 5,
+                Image = nil        
+            })
+            return
+        end
+
+        local sixthSenseFolder = Instance.new("Folder")
+        sixthSenseFolder.Name = "SixthSense"
+        sixthSenseFolder.Archivable = true
+        sixthSenseFolder.Parent = gamepassesFolder
+
+        Rayfield:Notify({
+            Title = "Gamepass Used Successfully!",
+            Content = "Press X to use the SixthSense Gamepass",
+            Duration = 6,
+            Image = nil
+        })
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "HeadLight Gamepass",
+   Callback = function()
+            if not game.Players.LocalPlayer then
+            return
+        end
+
+        local gamepassesFolder = game.Players.LocalPlayer:FindFirstChild("Gamepasses")
+        
+        if not gamepassesFolder then
+            Rayfield:Notify({
+                Title = "Wrong Game!",
+                Content = "HeadLight Gamepass folder not found, You might be in the wrong game.",
+                Duration = 5,
+                Image = nil        
+            })
+            return
+        end
+
+        local sixthSenseFolder = Instance.new("Folder")
+        sixthSenseFolder.Name = "HeadLight"
+        sixthSenseFolder.Archivable = true
+        sixthSenseFolder.Parent = gamepassesFolder
+
+        Rayfield:Notify({
+            Title = "Gamepass Used Successfully!",
+            Content = "Press V to use the HeadLight Gamepass",
+            Duration = 6,
+            Image = nil
+        })
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "VIP Gamepass",
+   Callback = function()
+            if not game.Players.LocalPlayer then
+            return
+        end
+
+        local gamepassesFolder = game.Players.LocalPlayer:FindFirstChild("Gamepasses")
+        
+        if not gamepassesFolder then
+            Rayfield:Notify({
+                Title = "Wrong Game!",
+                Content = "VIP Gamepass folder not found, You might be in the wrong game.",
+                Duration = 5,
+                Image = nil        
+            })
+            return
+        end
+
+        local sixthSenseFolder = Instance.new("Folder")
+        sixthSenseFolder.Name = "VIP"
+        sixthSenseFolder.Archivable = true
+        sixthSenseFolder.Parent = gamepassesFolder
+
+        Rayfield:Notify({
+            Title = "Gamepass Used Successfully!",
+            Content = "Now you have become a VIP.",
+            Duration = 6,
+            Image = nil
+        })
+   end,
+})
+
+local Tab = Window:CreateTab("💻 Interface")
+
+local Section = Tab:CreateSection("Interface")
+
+local Button = Tab:CreateButton({
+   Name = "Destroy the Interface",
+   Callback = function()
+            Rayfield:Destroy()
+   end,
+})
