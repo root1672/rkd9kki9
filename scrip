@@ -595,9 +595,9 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
-local targetName = "Skinny"
+local targetNames = {"Skinny", "Headless Horseman"}
 
-local billboardGui, nameLabelRed, nameLabelWhite
+local billboards = {}
 local espEnabled = false
 
 local function getDistance(character)
@@ -607,13 +607,13 @@ end
 local function createESP(target)
     if not target or not target:FindFirstChild("HumanoidRootPart") then return end
 
-    billboardGui = Instance.new("BillboardGui")
+    local billboardGui = Instance.new("BillboardGui")
     billboardGui.Size = UDim2.new(0, 200, 0, 50)
     billboardGui.Adornee = target.HumanoidRootPart
     billboardGui.AlwaysOnTop = true
     billboardGui.Parent = target.HumanoidRootPart
 
-    nameLabelRed = Instance.new("TextLabel")
+    local nameLabelRed = Instance.new("TextLabel")
     nameLabelRed.Size = UDim2.new(1, 0, 0.3, 0)
     nameLabelRed.Position = UDim2.new(0, 0, 0.4, 0)
     nameLabelRed.BackgroundTransparency = 1
@@ -624,7 +624,7 @@ local function createESP(target)
     nameLabelRed.TextStrokeColor3 = Color3.new(0, 0, 0)
     nameLabelRed.Parent = billboardGui
 
-    nameLabelWhite = Instance.new("TextLabel")
+    local nameLabelWhite = Instance.new("TextLabel")
     nameLabelWhite.Size = UDim2.new(1, 0, 0.3, 0)
     nameLabelWhite.Position = UDim2.new(0, 0, 0.55, 0)
     nameLabelWhite.BackgroundTransparency = 1
@@ -634,30 +634,36 @@ local function createESP(target)
     nameLabelWhite.TextStrokeTransparency = 0.5
     nameLabelWhite.TextStrokeColor3 = Color3.new(0, 0, 0)
     nameLabelWhite.Parent = billboardGui
+
+    billboards[target] = {
+        Billboard = billboardGui,
+        NameLabelRed = nameLabelRed,
+        NameLabelWhite = nameLabelWhite
+    }
 end
 
 local function updateESP(target)
-    if billboardGui and target and target.Parent then
+    if billboards[target] and target and target.Parent then
         local distance = getDistance(target)
-        nameLabelRed.Text = target.Name
-        nameLabelWhite.Text = string.format("%d m away", distance)
+        billboards[target].NameLabelRed.Text = target.Name
+        billboards[target].NameLabelWhite.Text = string.format("%d m away", distance)
     end
 end
 
-local function monitorTarget()
+local function monitorTargets()
     while espEnabled do
-        local target = Workspace.Alive:FindFirstChild(targetName)
-        if target then
-            if not billboardGui then
-                createESP(target)
-            end
-            updateESP(target)
-        else
-            if billboardGui then
-                billboardGui:Destroy()
-                billboardGui = nil
-                nameLabelRed = nil
-                nameLabelWhite = nil
+        for _, targetName in ipairs(targetNames) do
+            local target = Workspace.Alive:FindFirstChild(targetName)
+            if target then
+                if not billboards[target] then
+                    createESP(target)
+                end
+                updateESP(target)
+            else
+                if billboards[target] then
+                    billboards[target].Billboard:Destroy()
+                    billboards[target] = nil
+                end
             end
         end
         task.wait(0.001)
@@ -667,19 +673,17 @@ end
 local function toggleESP(value)
     espEnabled = value
     if espEnabled then
-        monitorTarget()
+        monitorTargets()
     else
-        if billboardGui then
-            billboardGui:Destroy()
-            billboardGui = nil
-            nameLabelRed = nil
-            nameLabelWhite = nil
+        for target, billboardData in pairs(billboards) do
+            billboardData.Billboard:Destroy()
         end
+        billboards = {}
     end
 end
 
 local Toggle = Tab:CreateToggle({
-    Name = "Skinny ESP",
+    Name = "Skinny & Headless Horseman ESP",
     CurrentValue = false,
     Flag = "ESP1",
     Callback = function(Value)
@@ -748,6 +752,29 @@ end,
 })
 
 Tab:CreateButton({
+    Name = "Halloween Shop",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Successfully Teleported!",
+            Content = "You have successfully teleported to the Halloween Shop.",
+            Duration = 6.5,
+            Image = nil
+        })
+
+        local player = game.Players.LocalPlayer
+        local target = workspace.MapEnvironment.Interactable.HalloweenShop
+
+        local function teleportPlayer()
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.CFrame
+            end
+        end
+
+        teleportPlayer()
+    end,
+})
+
+Tab:CreateButton({
     Name = "Safe-House",
     Callback = function()
         Rayfield:Notify({
@@ -806,13 +833,13 @@ Tab:CreateButton({
         })
         local player = game.Players.LocalPlayer
         local target = game.Workspace.Armory.Armory.Spawn
-
+ 
         local function teleportPlayer()
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                 player.Character.HumanoidRootPart.CFrame = target.CFrame
             end
         end
-
+ 
         teleportPlayer()
     end,
 })
@@ -826,16 +853,18 @@ Tab:CreateButton({
             Duration = 6.5,
             Image = nil
         })
-        local player = game.Players.LocalPlayer
-        local target = game.Workspace.MapEnvironment.Interactable.Generator
+            local player = game.Players.LocalPlayer
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local x = -614.36
+        local y = 20.29
+        local z = -277.71
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1047,15 +1076,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes:GetChildren()[6].Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = -668.55
+                    local y = 33.00
+                    local z = 432.70
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1069,15 +1100,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes.Holder.Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = -238.43
+                    local y = 23.54
+                    local z = 303.68
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1091,15 +1124,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes:GetChildren()[3].Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = 137.95
+                    local y = 73.01
+                    local z = -791.54
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1113,15 +1148,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes:GetChildren()[2].Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = 319.20
+                    local y = 22.13
+                    local z = 418.34
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1135,15 +1172,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes:GetChildren()[4].Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = -607.83
+                    local y = 20.29
+                    local z = -282.97
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
@@ -1157,15 +1196,17 @@ Tab:CreateButton({
             Image = nil
         })
         local player = game.Players.LocalPlayer
-        local target = game.Workspace.Armory.Codes:GetChildren()[5].Symbol
 
-        local function teleportPlayer()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = target.CFrame
-            end
-        end
+local function teleportPlayer()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local x = -509.83
+                    local y = 25.31
+                    local z = -661.75
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+    end
+end
 
-        teleportPlayer()
+teleportPlayer()
     end,
 })
 
